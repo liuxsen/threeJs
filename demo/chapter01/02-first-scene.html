@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>three.js</title>
+    <script type="text/javascript" src="../../libs/three.js"></script>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to
+             use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="WebGL-output">
+</div>
+<script type="text/javascript">
+    var scene,camera,width,height,renderer;
+    function init() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75,width/height,0.1,1000);
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(new THREE.Color(0xEEEEEE));
+        renderer.setSize(width,height);
+        var axes = new THREE.AxisHelper(20);
+        scene.add(axes);
+
+        // plane
+        var planeGeometry = new THREE.PlaneGeometry(60,20);
+        var planeMaterial = new THREE.MeshBasicMaterial({
+            color: 0xcccccc
+        });   
+        var plane = new THREE.Mesh(planeGeometry,planeMaterial)
+        // rotate and position the plane
+        plane.rotation.x = -0.5 * Math.PI;
+        plane.position.x = 15;
+        plane.position.y = 0;
+        plane.position.z = 0;
+        scene.add(plane);
+
+        // 正方体
+        var cubeGeometry = new THREE.BoxGeometry(4,4,4);
+        var cubeMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            wireframe: true
+        });
+        var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
+        cube.position.x = -4,
+        cube.position.y = 3;
+        cube.position.z = 0;
+        scene.add(cube);
+
+        //球体
+        var sphereGeometry = new THREE.SphereGeometry(4,30,30);
+        var sphereMaterail = new THREE.MeshBasicMaterial({
+            color: 0x7777ff,
+            wireframe: true
+        });
+        var sphere = new THREE.Mesh(sphereGeometry,sphereMaterail);
+        sphere.position.x = 20;
+        sphere.position.y = 4;
+        sphere.position.Z = 2;
+        scene.add(sphere);
+
+        //position and point the camera to the center of the scnene
+        camera.position.x = -30;
+        camera.position.y = 20;
+        camera.position.z = 20;
+        camera.lookAt(scene.position);
+
+        // add the output of the renderer to the html element
+        document.getElementById('WebGL-output').appendChild(renderer.domElement);
+        renderer.render(scene,camera);
+    }
+    window.onload = init
+</script>
+</body>
+</html>
