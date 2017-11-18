@@ -5,6 +5,7 @@
 <head>
     <title>three.js</title>
     <script type="text/javascript" src="../../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
     <style>
         body {
             /* set margin to 0 and overflow to hidden, to
@@ -15,10 +16,12 @@
     </style>
 </head>
 <body>
+<div id="stats-output"></div>
 <div id="WebGL-output">
 </div>
 <script type="text/javascript">
     var scene,camera,width,height,renderer;
+    var stats = initStats();
     function init() {
         width = window.innerWidth;
         height = window.innerHeight;
@@ -83,8 +86,35 @@
 
         // add the output of the renderer to the html element
         document.getElementById('WebGL-output').appendChild(renderer.domElement);
-        renderer.render(scene,camera);
+        // renderer.render(scene,camera);
+        update();
+        function update(){
+            stats.update();
+            animation();
+            requestAnimationFrame(update);
+            renderer.render(scene,camera);
+        }
+        var step = 0;
+        function animation(){
+            cube.rotation.x += 0.02;
+            cube.rotation.y += 0.02;
+            cube.rotation.z += 0.02;
+            step+=0.04;
+            sphere.position.x = 20+ (10*(Math.cos(step)));
+            sphere.position.y = 2+ (10*(Math.abs(Math.sin(step))));
+        }
     }
+    
+    function initStats(){
+        var stats = new Stats();
+        stats.setMode(0);
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0px';
+        stats.domElement.style.top = '0px';
+        document.getElementById('stats-output').appendChild(stats.domElement);
+        return stats;
+    }
+    
     window.onload = init
 </script>
 </body>
