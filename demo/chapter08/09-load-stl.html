@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>three.js</title>
+    <script type="text/javascript" src="../../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/STLLoader.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/dat.gui.js"></script>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to
+             use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="Stats-output"></div>
+<div id="WebGL-output">
+</div>
+<script type="text/javascript">
+    function init() {
+        var stats = initStats();
+
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        var scene = new THREE.Scene();
+
+        // create a camera, which defines where we're looking at.
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // create a render and set the size
+        var renderer = new THREE.WebGLRenderer();
+
+        renderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMapEnabled = true;
+        var axes = new THREE.AxisHelper(20);
+        scene.add(axes);
+
+
+        camera.position.x = -30;
+        camera.position.y = 30;
+        camera.position.z = 300;
+        camera.lookAt(scene.position);
+
+        // add subtle ambient lighting
+        var ambientLight = new THREE.AmbientLight(0x0c0c0c);
+        scene.add(ambientLight);
+
+        var spotLight = new THREE.PointLight(0xffffff);
+        spotLight.position.set(-40, 60, -10);
+        //  spotLight.castShadow = true;
+        scene.add(spotLight);
+
+        // add the output of the renderer to the html element
+        document.getElementById("WebGL-output").appendChild(renderer.domElement);
+        var mesh;
+        var loader = new THREE.STLLoader();
+
+        loader.load("../../assets/models/SolidHead_2_lowPoly_42k.stl", function (geometry) {
+            console.log(geometry);
+            var mat = new THREE.MeshLambertMaterial({color: 0x7777ff});
+            group = new THREE.Mesh(geometry, mat);
+            group.rotation.x = -0.5 * Math.PI;
+            group.position.z = 10;
+            group.position.y = 0;
+            group.position.x = 0;
+            group.scale.set(0.3, 0.3, 0.3);
+            mesh = group;
+            scene.add(group);
+        });
+
+        render();
+        function render() {
+             stats.update();
+            // rotate the cube around its axes
+            if (mesh) {
+                mesh.rotation.x += 0.006;
+                // mesh.rotation.x += 0.006;
+//                mesh.rotation.y+=0.006;
+            }
+
+            // render using requestAnimationFrame
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+      function initStats() {
+            var stats = new Stats();
+            stats.setMode(0); // 0: fps, 1: ms
+            // Align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+            document.getElementById("Stats-output").appendChild(stats.domElement);
+            return stats;
+        }
+    }
+    window.onload = init;
+</script>
+</body>
+</html>
