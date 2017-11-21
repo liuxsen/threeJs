@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>three.js</title>
+    <script type="text/javascript" src="../../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/dat.gui.js"></script>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to
+             use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="Stats-output"></div>
+<div id="WebGL-output">
+</div>
+<script type="text/javascript">
+    function init(){
+        var scene = new THREE.Scene();
+
+        // create a camera, which defines where we're looking at.
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // create a render and set the size
+        var webGLRenderer = new THREE.WebGLRenderer();
+        webGLRenderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0));
+        webGLRenderer.setSize(window.innerWidth, window.innerHeight);
+        webGLRenderer.shadowMapEnabled = true;
+        camera.position.x = -20;
+        camera.position.y = 30;
+        camera.position.z = 30;
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        var ground = new THREE.PlaneGeometry(100, 100, 50, 50);
+        var groundMesh = THREE.SceneUtils.createMultiMaterialObject(ground,
+                [new THREE.MeshBasicMaterial({wireframe: true, overdraw: true, color: 000000}),
+                    new THREE.MeshBasicMaterial({color: 0x00ff00, transparent: true, opacity: 0.5}
+                    )
+                ]);
+        groundMesh.rotation.x = -0.5 * Math.PI;
+        scene.add(groundMesh);
+        var sphere = createMesh(new THREE.SphereGeometry(5, 10, 10));
+        var cube = createMesh(new THREE.BoxGeometry(6, 6, 6));
+        sphere.position.set(30,0,0);
+        cube.position.set(-10,0,0);
+        var group = new THREE.Group();
+        group.add(sphere);
+        group.add(cube);
+        scene.add(group);
+
+
+        document.getElementById("WebGL-output").appendChild(webGLRenderer.domElement);
+        var stats = initStats();
+        render();
+        function render() {
+            stats.update();
+            update();
+            requestAnimationFrame(render);
+            webGLRenderer.render(scene, camera);
+        }
+        var step = 0.02;
+        function update(){
+            step+=0.02;
+           group.rotation.x =step; 
+        }
+
+        function createMesh(geom) {
+
+            // assign two materials
+            var meshMaterial = new THREE.MeshNormalMaterial();
+            meshMaterial.side = THREE.DoubleSide;
+            var wireFrameMat = new THREE.MeshBasicMaterial();
+            wireFrameMat.wireframe = true;
+
+            // create a multimaterial
+            var plane = THREE.SceneUtils.createMultiMaterialObject(geom, [meshMaterial, wireFrameMat]);
+
+            return plane;
+        }
+
+        function initStats() {
+
+            var stats = new Stats();
+            stats.setMode(0); // 0: fps, 1: ms
+
+            // Align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.getElementById("Stats-output").appendChild(stats.domElement);
+
+            return stats;
+        }
+    }
+    window.onload = init;
+</script>
+</body>
+</html>
